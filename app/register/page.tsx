@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2, Eye, EyeOff, GraduationCap, Briefcase, Check } from "lucide-react"
-import { registerUser, loginUser, updateUserRole } from "@/lib/api"
+import { registerUser } from "@/lib/api"
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8081"
 
@@ -109,34 +109,22 @@ export default function RegisterPage() {
     setErrors({})
 
     try {
-      // Step 1: Register user
-      await registerUser({
+      // Register user with role/subscription
+      const registrationData = await registerUser({
         name: formData.name.trim(),
         email: formData.email.trim(),
         password: formData.password,
-        selectedRole: formData.selectedRole,
+        subscription: formData.selectedRole, // Use subscription instead of selectedRole
       })
 
-      // Step 2: Login to get token
-      const loginData = await loginUser({
-        email: formData.email.trim(),
-        password: formData.password,
-      })
+      console.log("Registration successful:", registrationData)
 
-      const token = loginData.token
-
-      // Step 3: Update user role
-      await updateUserRole(formData.selectedRole)
-
-      // Success - store token and redirect
-      localStorage.setItem("token", token)
-      localStorage.setItem("user", JSON.stringify(loginData.user))
-
+      // Show success message
       setIsSuccess(true)
 
-      // Redirect after 2 seconds
+      // Redirect to login page after 2 seconds
       setTimeout(() => {
-        router.push("/dashboard")
+        router.push("/login")
       }, 2000)
     } catch (error) {
       console.error("Registration error:", error)
@@ -165,7 +153,7 @@ export default function RegisterPage() {
               <Check className="h-8 w-8 text-white" />
             </div>
             <h2 className="text-2xl font-bold text-white mb-2">Account Created!</h2>
-            <p className="text-purple-100 mb-4">Welcome to AssistDeck! Redirecting you to your dashboard...</p>
+            <p className="text-purple-100 mb-4">Welcome to AssistDeck! Redirecting you to login...</p>
             <div className="flex justify-center">
               <Loader2 className="h-6 w-6 text-purple-400 animate-spin" />
             </div>

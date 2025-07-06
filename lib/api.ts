@@ -6,7 +6,7 @@ export const apiEndpoints = {
   register: `${API_BASE_URL}/api/register`,
   login: `${API_BASE_URL}/api/login`,
   profile: `${API_BASE_URL}/api/users/profile`,
-  updateRole: `${API_BASE_URL}/api/users/role`,
+  // Removed updateRole endpoint as it's no longer needed
 
   // Dashboard
   dashboard: `${API_BASE_URL}/api/dashboard`,
@@ -236,21 +236,18 @@ export const createPayPalPayment = async (plan: string) => {
   })
 }
 
-// Specific API functions (keeping existing ones)
+// Authentication API functions
 export const registerUser = async (userData: {
   name: string
   email: string
   password: string
-  subscription?: string
-  selectedRole?: string
+  subscription: string
 }) => {
-  const subscriptionValue = (userData.subscription || userData.selectedRole || '').toLowerCase();
-
   console.log("📦 Register Payload:", {
     name: userData.name,
     email: userData.email,
     password: userData.password,
-    subscription: subscriptionValue
+    subscription: userData.subscription
   });
 
   return apiCall(apiEndpoints.register, {
@@ -259,13 +256,10 @@ export const registerUser = async (userData: {
       name: userData.name,
       email: userData.email,
       password: userData.password,
-      subscription: subscriptionValue, // ✅ correct key for backend
+      subscription: userData.subscription,
     }),
   });
 }
-
-
-
 
 export const loginUser = async (credentials: {
   email: string
@@ -277,15 +271,10 @@ export const loginUser = async (credentials: {
   })
 }
 
-export const updateUserRole = async (role: string) => {
-  return apiCall(apiEndpoints.updateRole, {
-    method: "PUT",
-    body: JSON.stringify({ role }),
-  })
-}
-
 export const getUserProfile = async () => {
   return apiCall(apiEndpoints.profile, {
     method: "GET",
   })
 }
+
+// Removed updateUserRole function as it's no longer needed
